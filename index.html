@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AWS 3-Tier Demo</title>
+  <style>
+    body { font-family: Arial; margin: 40px; }
+    input { margin-right: 10px; }
+  </style>
+</head>
+<body>
+  <h1>📋 User List</h1>
+
+  <form id="userForm">
+    <input type="text" id="name" placeholder="Name" required>
+    <input type="email" id="email" placeholder="Email" required>
+    <button type="submit">Add User</button>
+  </form>
+
+  <ul id="userList"></ul>
+
+  <script>
+    const backendUrl = 'http://YOUR-BACKEND-ALB-DNS/users';
+
+    const loadUsers = async () => {
+      const res = await fetch(backendUrl);
+      const users = await res.json();
+      const list = document.getElementById('userList');
+      list.innerHTML = '';
+      users.forEach(u => {
+        const li = document.createElement('li');
+        li.innerText = ${u.name} (${u.email});
+        list.appendChild(li);
+      });
+    };
+
+    document.getElementById('userForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      await fetch(backendUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email }),
+      });
+      loadUsers();
+    });
+
+    loadUsers();
+  </script>
+</body>
+</html>
