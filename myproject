@@ -1,0 +1,77 @@
+---
+
+## 🌐 Live Flow
+
+1. User accesses *Frontend ALB (public DNS)*
+2. Frontend EC2 serves HTML + JS
+3. Frontend calls API → routed to *Backend ALB (internal)*
+4. Backend EC2 runs Node.js server → queries *RDS MySQL*
+5. Response returned to user
+
+---
+
+## 🧰 How to Deploy (Manual AWS Console)
+
+### 1. VPC & Networking
+- Create custom VPC
+- Add 2 public subnets (for ALBs) & 2 private subnets (for EC2 + RDS)
+- Add Internet Gateway + NAT Gateway
+- Route tables configured accordingly
+
+### 2. Security Groups (5 Total)
+| SG Name         | Inbound From           | Port |
+|----------------|------------------------|------|
+| frontend-alb-sg| 0.0.0.0/0              | 80   |
+| frontend-ec2-sg| frontend-alb-sg        | 80   |
+| backend-alb-sg | frontend-ec2-sg        | 80   |
+| backend-ec2-sg | backend-alb-sg         | 80   |
+| rds-sg         | backend-ec2-sg         | 3306 |
+
+### 3. Launch EC2 Instances
+- *Frontend EC2 (Amazon Linux 2)*
+  - Subnet: private
+  - User Data: scripts/setup-frontend.sh
+- *Backend EC2 (Amazon Linux 2)*
+  - Subnet: private
+  - User Data: scripts/setup-backend.sh
+
+### 4. RDS MySQL
+- Private subnets
+- Security group: rds-sg
+- Run db/init.sql to create users table
+
+---
+
+## ⚙ Backend API (backend-app/server.js)
+
+- GET /users → fetch all users
+- POST /users → add a user (name + email)
+
+---
+
+## 🖥 Frontend (frontend-app/index.html)
+
+- Shows user list
+- Simple form to add new user via API
+
+---
+
+## 📦 Deployment Tips
+
+- Replace YOUR-RDS-ENDPOINT and YOUR-BACKEND-ALB-DNS in code
+- Use nohup to keep Node.js running after boot
+- Use *User Data* to automate setup
+
+---
+
+## 💼 Resume Bullet Example
+
+> - Built and deployed a 3-tier web application on AWS with public and internal load balancers  
+> - Configured EC2-based frontend/backend tiers with RDS MySQL using best-practice security groups  
+> - Used User Data scripts to automate app deployment on launch
+
+---
+
+## 📎 License
+
+MIT License
