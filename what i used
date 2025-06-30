@@ -1,0 +1,14 @@
+---
+
+## ✅ Technologies Used
+
+- *AWS EC2* – for frontend and backend servers
+- *AWS ALB (Application Load Balancer)* – public & internal layers
+- *RDS MySQL* – managed relational database
+- *Node.js + Express* – backend API
+- *HTML + JS* – frontend
+- *Security Groups* – layered firewall
+
+---
+
+## 📁 Project Structure
